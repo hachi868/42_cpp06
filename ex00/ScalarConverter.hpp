@@ -1,6 +1,7 @@
-#ifndef __SCALARCONVERTER_H__
-#define __SCALARCONVERTER_H__
+#ifndef __SCALAR_CONVERTER_H__
+#define __SCALAR_CONVERTER_H__
 
+#include <iostream>
 
 class ScalarConverter {
 public:
@@ -20,4 +21,4 @@ private:
 };
 
 
-#endif //__SCALARCONVERTER_H__
+#endif //__SCALAR_CONVERTER_H__

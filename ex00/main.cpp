@@ -13,6 +13,6 @@ int main(int argc, char **argv)
 		std::cerr << "Error: invalid argc\n" << std::endl;
 		return (1);
 	}
-	ScalarConverter.convert(argv[i]);
+	ScalarConverter::convert(argv[1]);
 	return (0);
 }
