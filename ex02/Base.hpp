@@ -5,7 +5,7 @@
 
 class Base {
 public:
-	virtuial ~Base();
+	virtual ~Base();
 };
 
 #endif //BASE_HPP

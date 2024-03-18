@@ -3,7 +3,8 @@ PROG := realtype
 CXX := c++
 CXXFLAGS := -Wall -Wextra -Werror
 CXXFLAGS += -std=c++98
-SRCS =	main.cpp
+SRCS =	main.cpp \
+		Base.cpp
 
 OBJS := $(SRCS:.cpp=.o)
 
