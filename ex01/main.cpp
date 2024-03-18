@@ -9,8 +9,9 @@ static void destructor() {
 
 int main()
 {
+	Data *student;
 	try {
-		Data* student = new Data;
+		student = new Data;
 	} catch (const std::bad_alloc& e) {
 		std::cerr << Serializer::ALERT << "Memory allocation failed." << Serializer::RESET << std::endl;
 	}
@@ -18,13 +19,20 @@ int main()
 	student->name = "user1";
 	student->level = 3.1;
 
-	uintptr_t	rawPtr = serialize(student);
+	std::cout << Serializer::STATE << "[student]" << Serializer::RESET << std::endl;
+	std::cout << "student->number: " << student->number << std::endl;
+	std::cout << "student->name: " << student->name << std::endl;
+	std::cout << "student->level: " << student->level << std::endl;
+
+	std::cout << std::endl << Serializer::STATE << "[serialize]" << Serializer::RESET << std::endl;
+	uintptr_t	rawPtr = Serializer::serialize(student);
 	std::cout << "rawPtr: " << rawPtr << std::endl;
 
-	Data* studentDeserialize = deserialize(rawPtr);
+	std::cout << std::endl << Serializer::STATE << "[deserialize]" << Serializer::RESET << std::endl;
+	Data* studentDeserialize = Serializer::deserialize(rawPtr);
 	std::cout << "studentDeserialize->number: " << studentDeserialize->number << std::endl;
 	std::cout << "studentDeserialize->name: " << studentDeserialize->name << std::endl;
-	std::cout << "studentDeserialize->level: " << studentDeserialize->level << std::endl;
-	delete data;
+	std::cout << "studentDeserialize->level: " << studentDeserialize->level << std::endl << std::endl;
+	delete student;
 	return (0);
 }

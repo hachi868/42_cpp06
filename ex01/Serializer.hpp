@@ -1,14 +1,13 @@
 #ifndef SERIALIZER_HPP
 #define SERIALIZER_HPP
 
+#include "Data.hpp"
 #include <iostream>
-
-class Data;
 
 class Serializer {
 public:
-	static uintptr_t serialize(Data* ptr);
-	static Data* deserialize(uintptr_t raw);
+	static uintptr_t serialize(Data *ptr);
+	static Data *deserialize(uintptr_t raw);
 
 	const static std::string RESET;
 	const static std::string DEBUG;
