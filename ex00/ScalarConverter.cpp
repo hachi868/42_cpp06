@@ -134,9 +134,6 @@ void ScalarConverter::convertToChar(const std::string &literal, const TypeLitera
 					std::cout << std::fixed << std::setprecision(1) << c_literal << std::endl;
 				else
 					std::cerr << ScalarConverter::MSG << "impossible (cannot be converted)" << ScalarConverter::RESET << std::endl;
-				//
-				//float f_literal = static_cast<float>(std::atof(literal.c_str()));
-				//std::cout << f_literal << std::endl;
 			} catch (const std::invalid_argument& e) {
 				std::cerr << ScalarConverter::MSG << "impossible (cannot be converted)" << ScalarConverter::RESET << std::endl;
 			} catch (const std::out_of_range& e) {
@@ -168,30 +165,19 @@ void ScalarConverter::convertToChar(const std::string &literal, const TypeLitera
 void ScalarConverter::convertToInt(const std::string &literal, const TypeLiteral &type)
 {
 	std::cout << "int: ";
-	if (type == T_CHAR){
-		std::cout << static_cast<int>(literal[0]) << std::endl;
-		return ;
-	}
-	try {
-		int c_literal = std::stoi(literal);
-		std::cout << c_literal << std::endl;
-	} catch (const std::invalid_argument &e) {
-		std::cerr << ScalarConverter::MSG << "impossible (cannot be converted)" << ScalarConverter::RESET << std::endl;
-	} catch (const std::out_of_range &e) {
-		std::cerr << ScalarConverter::MSG << "impossible (out of range)" << ScalarConverter::RESET << std::endl;
-	}
-}
-void ScalarConverter::convertToFloat(const std::string &literal, const TypeLiteral &type)
-{
-	std::cout << "float: ";
-	float f_literal;
 	switch (type) {
 		case T_CHAR:
-			std::cout << static_cast<float>(literal[0]) << "f" << std::endl;
+			std::cout << static_cast<int>(literal[0]) << std::endl;
 			break;
 		case T_INT:
-			f_literal = std::atof(literal.c_str());
-			std::cout << f_literal << "f" << std::endl;
+			try {
+				int c_literal = std::atoi(literal.c_str());
+				std::cout << c_literal << std::endl;
+			} catch (const std::invalid_argument& e) {
+				std::cerr << ScalarConverter::MSG << "impossible (cannot be converted)" << ScalarConverter::RESET << std::endl;
+			} catch (const std::out_of_range& e) {
+				std::cerr << ScalarConverter::MSG << "impossible (out of range)" << ScalarConverter::RESET << std::endl;
+			}
 			break;
 		case T_FLOAT:
 			if (literal == "-inff" || literal == "+inff" ||  literal == "nanf") {
@@ -199,8 +185,8 @@ void ScalarConverter::convertToFloat(const std::string &literal, const TypeLiter
 				return ;
 			}
 			try {
-				f_literal = std::atof(literal.c_str());
-				std::cout << std::fixed << std::setprecision(countDecimalAfterDot(literal)) << f_literal << "f" << std::endl;
+				float f_literal = std::atof(literal.c_str());
+				std::cout << static_cast<int>(f_literal) << std::endl;
 			} catch (const std::invalid_argument &e) {
 				std::cerr << ScalarConverter::MSG << "nanf" << ScalarConverter::RESET << std::endl;
 			} catch (const std::out_of_range &e) {
@@ -216,8 +202,63 @@ void ScalarConverter::convertToFloat(const std::string &literal, const TypeLiter
 				return ;
 			}
 			try {
-				//f_literal = std::atof(literal.c_str());
-				std::cout << std::fixed << std::setprecision(countDecimalAfterDot(literal)) << f_literal << std::endl;
+				std::istringstream iss(literal);
+				double d_literal;
+				iss >> d_literal;
+				std::cout << static_cast<float>(d_literal) << std::endl;
+			} catch (const std::invalid_argument &e) {
+				std::cerr << ScalarConverter::MSG << "nanf" << ScalarConverter::RESET << std::endl;
+			} catch (const std::out_of_range &e) {
+				if (literal[0] == '-')
+					std::cerr << ScalarConverter::MSG << "-inff" << ScalarConverter::RESET << std::endl;
+				else
+					std::cerr << ScalarConverter::MSG << "+inff" << ScalarConverter::RESET << std::endl;
+			}
+			break;
+		case INVALID:
+			//実行時弾くのでここにはこない
+			std::cerr << ScalarConverter::ALERT << "Error: invalid type" << ScalarConverter::RESET << std::endl;
+			break;
+	}
+}
+void ScalarConverter::convertToFloat(const std::string &literal, const TypeLiteral &type)
+{
+	std::cout << "float: ";
+	switch (type) {
+		case T_CHAR:
+			std::cout << static_cast<float>(literal[0]) << "f" << std::endl;
+			break;
+		case T_INT:
+			int i_literal = std::atoi(literal.c_str());
+			std::cout << static_cast<float>(i_literal) << "f" << std::endl;
+			break;
+		case T_FLOAT:
+			if (literal == "-inff" || literal == "+inff" ||  literal == "nanf") {
+				std::cerr << ScalarConverter::MSG << literal << ScalarConverter::RESET << std::endl;
+				return ;
+			}
+			try {
+				float f_literal = std::atof(literal.c_str());
+				std::cout << std::fixed << std::setprecision(countDecimalAfterDot(literal)) <<  static_cast<double>(f_literal) << "f" << std::endl;
+			} catch (const std::invalid_argument &e) {
+				std::cerr << ScalarConverter::MSG << "nanf" << ScalarConverter::RESET << std::endl;
+			} catch (const std::out_of_range &e) {
+				if (literal[0] == '-')
+					std::cerr << ScalarConverter::MSG << "-inff" << ScalarConverter::RESET << std::endl;
+				else
+					std::cerr << ScalarConverter::MSG << "+inff" << ScalarConverter::RESET << std::endl;
+			}
+			break;
+		case T_DOUBLE:
+			if (literal == "-inf" || literal == "+inf" ||  literal == "nan") {
+				std::cerr << ScalarConverter::MSG << literal << "f" << ScalarConverter::RESET << std::endl;
+				return ;
+			}
+			try {
+				std::istringstream iss(literal);
+				double d_literal;
+				iss >> d_literal;
+				std::cout << std::fixed << std::setprecision(countDecimalAfterDot(literal)) << d_literal << std::endl;
 			} catch (const std::invalid_argument &e) {
 				std::cerr << ScalarConverter::MSG << "nanf" << ScalarConverter::RESET << std::endl;
 			} catch (const std::out_of_range &e) {
@@ -236,36 +277,64 @@ void ScalarConverter::convertToFloat(const std::string &literal, const TypeLiter
 void ScalarConverter::convertToDouble(const std::string &literal, const TypeLiteral &type)
 {
 	std::cout << "double: ";
-	if (type == T_CHAR){
-		std::cout << std::fixed << std::setprecision(1) << static_cast<double>(literal[0]) << std::endl;
-		return ;
-	}
-	//T_FLOAT
-	if (literal == "-inff" || literal == "+inff" ||  literal == "nanf") {
-		std::cerr << ScalarConverter::MSG;
-		for (int i=0;i<(int)literal.size()-1;i++)
-			std::cerr << literal[i];
-		std::cerr << ScalarConverter::RESET << std::endl;
-		return ;
-	}
-	//T_DOUBLE
-	if (literal == "-inf" || literal == "+inf" ||  literal == "nan") {
-		std::cerr << ScalarConverter::MSG << literal << ScalarConverter::RESET << std::endl;
-		return ;
-	}
-	try {
-		double c_literal = std::stod(literal);
-		double c_literal_floor = c_literal;
-		if (std::floor(c_literal_floor) == c_literal)
-			std::cout << std::fixed << std::setprecision(1) << c_literal << std::endl;
-		else
-			std::cout << std::fixed << std::setprecision(literal.size()) << c_literal << std::endl;
-	} catch (const std::invalid_argument &e) {
-		std::cerr << ScalarConverter::MSG << "nan" << ScalarConverter::RESET << std::endl;
-	} catch (const std::out_of_range &e) {
-		if (literal[0] == '-')
-			std::cerr << ScalarConverter::MSG << "-inf" << ScalarConverter::RESET << std::endl;
-		else
-			std::cerr << ScalarConverter::MSG << "+inf" << ScalarConverter::RESET << std::endl;
+	switch (type) {
+		case T_CHAR:
+			std::cout << static_cast<double>(literal[0]) << std::endl;
+			break;
+		case T_INT:
+			try {
+				int i_literal = std::atoi(literal.c_str());
+				std::cout << static_cast<double>(i_literal) << std::endl;
+			} catch (const std::invalid_argument &e) {
+				std::cerr << ScalarConverter::MSG << "impossible (cannot be converted)" << ScalarConverter::RESET << std::endl;
+			} catch (const std::out_of_range &e) {
+				std::cerr << ScalarConverter::MSG << "impossible (out of range)" << ScalarConverter::RESET << std::endl;
+			}
+			break;
+		case T_FLOAT:
+			if (literal == "-inff" || literal == "+inff" ||  literal == "nanf") {
+				std::cerr << ScalarConverter::MSG;
+				for (int i=0;i<(int)literal.size()-1;i++)
+					std::cerr << literal[i];
+				std::cerr << ScalarConverter::RESET << std::endl;
+				return ;
+			}
+			try {
+				std::istringstream iss(literal);
+				double d_literal;
+				iss >> d_literal;
+				std::cout << std::fixed << std::setprecision(countDecimalAfterDot(literal)) << d_literal << std::endl;
+			} catch (const std::invalid_argument &e) {
+				std::cerr << ScalarConverter::MSG << "nan" << ScalarConverter::RESET << std::endl;
+			} catch (const std::out_of_range &e) {
+				if (literal[0] == '-')
+					std::cerr << ScalarConverter::MSG << "-inf" << ScalarConverter::RESET << std::endl;
+				else
+					std::cerr << ScalarConverter::MSG << "+inf" << ScalarConverter::RESET << std::endl;
+			}
+			break;
+		case T_DOUBLE:
+			if (literal == "-inf" || literal == "+inf" ||  literal == "nan") {
+				std::cerr << ScalarConverter::MSG << literal << ScalarConverter::RESET << std::endl;
+				return ;
+			}
+			try {
+				std::istringstream iss(literal);
+				double d_literal;
+				iss >> d_literal;
+				std::cout << std::fixed << std::setprecision(countDecimalAfterDot(literal)) << d_literal << std::endl;
+			} catch (const std::invalid_argument &e) {
+				std::cerr << ScalarConverter::MSG << "nan" << ScalarConverter::RESET << std::endl;
+			} catch (const std::out_of_range &e) {
+				if (literal[0] == '-')
+					std::cerr << ScalarConverter::MSG << "-inf" << ScalarConverter::RESET << std::endl;
+				else
+					std::cerr << ScalarConverter::MSG << "+inf" << ScalarConverter::RESET << std::endl;
+			}
+			break;
+		case INVALID:
+			//実行時弾くのでここにはこない
+			std::cerr << ScalarConverter::ALERT << "Error: invalid type" << ScalarConverter::RESET << std::endl;
+			break;
 	}
 }
