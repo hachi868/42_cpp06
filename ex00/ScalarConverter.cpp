@@ -1,8 +1,6 @@
 #include "ScalarConverter.hpp"
 #include <iomanip>//setprecision
 #include <limits> // std::numeric_limits
-//#include <cstdlib>// atof
-//#include <stdlib.h>
 #include <sstream>
 
 const std::string ScalarConverter::RESET = "\033[0m";
@@ -115,8 +113,7 @@ void ScalarConverter::convertToChar(const std::string &literal, const TypeLitera
 				return ;
 			}
 			try {
-				//todo: stofとatof
-				float c_literal = std::stof(literal);
+				float c_literal = std::atof(literal.c_str());
 				float c_literal_floor = c_literal;
 				if (std::floor(c_literal_floor) == c_literal)
 					std::cout << std::fixed << std::setprecision(1) << c_literal << std::endl;
@@ -147,7 +144,9 @@ void ScalarConverter::convertToChar(const std::string &literal, const TypeLitera
 				std::cerr << ScalarConverter::MSG << "impossible (out of range)" << ScalarConverter::RESET << std::endl;
 			}
 			break;
-		case INVALID://todo: 例外
+		case INVALID:
+			//実行時弾くのでここにはこない
+			std::cerr << ScalarConverter::ALERT << "Error: invalid type" << ScalarConverter::RESET << std::endl;
 			break;
 	}
 }
@@ -155,7 +154,7 @@ void ScalarConverter::convertToInt(const std::string &literal, const TypeLiteral
 {
 	std::cout << "int: ";
 	if (type == T_CHAR){
-		std::cout << (int)literal[0] << std::endl;
+		std::cout << static_cast<int>(literal[0]) << std::endl;
 		return ;
 	}
 	try {
@@ -198,7 +197,6 @@ void ScalarConverter::convertToFloat(const std::string &literal, const TypeLiter
 }
 void ScalarConverter::convertToDouble(const std::string &literal, const TypeLiteral &type)
 {
-	(void)type;
 	std::cout << "double: ";
 	if (type == T_CHAR){
 		std::cout << std::fixed << std::setprecision(1) << static_cast<double>(literal[0]) << std::endl;
