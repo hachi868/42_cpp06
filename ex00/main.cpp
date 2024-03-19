@@ -14,18 +14,59 @@ int main(int argc, char **argv)
 	}
 	//コマンドライン引数なしならテスト実行
 	if (argc == 1) {
-		std::cout << "[test0]21\n" << std::endl;
-		ScalarConverter::convert("21");
-		std::cout << "[test0]2asdfg1\n" << std::endl;
-		ScalarConverter::convert("2asdfg1");
-		std::cout << "[test0]2147483647\n" << std::endl;
+		// T_CHAR
+		std::cout << ScalarConverter::STATE << "[test char 1]c" << ScalarConverter::RESET << std::endl;
+		ScalarConverter::convert("c");
+		std::cout << std::endl << ScalarConverter::STATE << "[test char 0]0" << ScalarConverter::RESET << std::endl;
+		ScalarConverter::convert("0");
+		std::cout << std::endl << ScalarConverter::STATE << "[test char 0]A" << ScalarConverter::RESET << std::endl;
+		ScalarConverter::convert("A");
+		std::cout << std::endl << ScalarConverter::STATE << "[test char 0]*" << ScalarConverter::RESET << std::endl;
+		ScalarConverter::convert("*");
+
+		std::cout << std::endl << "*-*-*-*-*-*-*" << std::endl << std::endl;
+		// T_INT
+		std::cout << ScalarConverter::STATE << "[test int 1]42" << ScalarConverter::RESET << std::endl;
+		ScalarConverter::convert("42");
+		std::cout << std::endl << ScalarConverter::STATE << "[test int 2]+42" << ScalarConverter::RESET << std::endl;
+		ScalarConverter::convert("+42");
+		std::cout << std::endl << ScalarConverter::STATE << "[test int 3]-42" << ScalarConverter::RESET << std::endl;
+		ScalarConverter::convert("-42");
+		std::cout << std::endl << ScalarConverter::STATE << "[test int 4]+-42" << ScalarConverter::RESET << std::endl;
+		ScalarConverter::convert("+-42");
+		std::cout << std::endl << ScalarConverter::STATE << "[test int 5]126" << ScalarConverter::RESET << std::endl;
+		ScalarConverter::convert("126");
+		std::cout << std::endl << ScalarConverter::STATE << "[test int 6]127" << ScalarConverter::RESET << std::endl;
+		ScalarConverter::convert("127");
+		std::cout << std::endl << ScalarConverter::STATE << "[test int 7]128" << ScalarConverter::RESET << std::endl;
+		ScalarConverter::convert("128");
+		std::cout << std::endl << ScalarConverter::STATE << "[test int 8]42qwerty24" << ScalarConverter::RESET << std::endl;
+		ScalarConverter::convert("42qwerty24");
+		std::cout << std::endl << ScalarConverter::STATE << "[test int 9]2147483647" << ScalarConverter::RESET << std::endl;
 		ScalarConverter::convert("2147483647");
-		std::cout << "[test0]2147483648\n" << std::endl;
-		ScalarConverter::convert("2147483648");
-		std::cout << "[test0]-2147483648\n" << std::endl;
+		std::cout << std::endl << ScalarConverter::STATE << "[test int 10]-2147483648" << ScalarConverter::RESET << std::endl;
 		ScalarConverter::convert("-2147483648");
-		std::cout << "[test0]-2147483649\n" << std::endl;
+		std::cout << std::endl << ScalarConverter::STATE << "[test int 11]2147483648" << ScalarConverter::RESET << std::endl;
+		ScalarConverter::convert("2147483648");
+		std::cout << std::endl << ScalarConverter::STATE << "[test int 12]-2147483649" << ScalarConverter::RESET << std::endl;
 		ScalarConverter::convert("-2147483649");
+
+		std::cout << std::endl << "*-*-*-*-*-*-*" << std::endl;
+		// T_FLOAT
+		std::cout << ScalarConverter::STATE << "[test float 1]-inff" << ScalarConverter::RESET << std::endl;
+		ScalarConverter::convert("-inff");
+		std::cout << std::endl << ScalarConverter::STATE << "[test float 2]+inff" << ScalarConverter::RESET << std::endl;
+		ScalarConverter::convert("+inff");
+		std::cout << std::endl << ScalarConverter::STATE << "[test float 3]nanf" << ScalarConverter::RESET << std::endl;
+		ScalarConverter::convert("nanf");
+		std::cout << "*-*-*-*-*-*-*" << std::endl << std::endl;
+		// T_DOUBLE
+		std::cout << ScalarConverter::STATE << "[test double 1]-inf" << ScalarConverter::RESET << std::endl;
+		ScalarConverter::convert("-inf");
+		std::cout << std::endl << ScalarConverter::STATE << "[test double 2]+inf" << ScalarConverter::RESET << std::endl;
+		ScalarConverter::convert("+inf");
+		std::cout << std::endl << ScalarConverter::STATE << "[test double 3]nan" << ScalarConverter::RESET << std::endl;
+		ScalarConverter::convert("nan");
 	} else {
 		ScalarConverter::convert(argv[1]);
 	}

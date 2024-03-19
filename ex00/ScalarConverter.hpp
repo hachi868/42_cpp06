@@ -15,6 +15,12 @@ class ScalarConverter {
 public:
 	static void convert(const std::string &literal);
 
+	const static std::string RESET;
+	const static std::string DEBUG;
+	const static std::string STATE;
+	const static std::string ALERT;
+	const static std::string MSG;
+
 private:
 	static TypeLiteral judgeTypes(const std::string &literal);
 	static void convertToChar(const std::string &literal, const TypeLiteral &type);
