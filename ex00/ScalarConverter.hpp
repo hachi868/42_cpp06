@@ -29,6 +29,7 @@ private:
 	static void convertToDouble(const std::string &literal, const TypeLiteral &type);
 	static int countDot(const std::string &literal);
 	static bool checkIntOverFlow(const std::string &literal, size_t i);
+	static int	countDecimalAfterDot(const std::string &literal);
 	static const std::string intMaxAbs;
 	static const std::string intMinAbs;
 
