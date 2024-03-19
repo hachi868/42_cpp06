@@ -59,7 +59,17 @@ int main(int argc, char **argv)
 		ScalarConverter::convert("+inff");
 		std::cout << std::endl << ScalarConverter::STATE << "[test float 3]nanf" << ScalarConverter::RESET << std::endl;
 		ScalarConverter::convert("nanf");
-		std::cout << "*-*-*-*-*-*-*" << std::endl << std::endl;
+		std::cout << std::endl << ScalarConverter::STATE << "[test float 4]0.012345f" << ScalarConverter::RESET << std::endl;
+		ScalarConverter::convert("0.01234567890123456789f");
+		std::cout << std::endl << ScalarConverter::STATE << "[test double 5]42.0f" << ScalarConverter::RESET << std::endl;
+		ScalarConverter::convert("42.0f");
+		std::cout << std::endl << ScalarConverter::STATE << "[test double 6]-42.0f" << ScalarConverter::RESET << std::endl;
+		ScalarConverter::convert("-42.0f");
+		std::cout << std::endl << ScalarConverter::STATE << "[test double 5]42.042f" << ScalarConverter::RESET << std::endl;
+		ScalarConverter::convert("42.042f");
+		std::cout << std::endl << ScalarConverter::STATE << "[test double 6]-42.042f" << ScalarConverter::RESET << std::endl;
+		ScalarConverter::convert("-42.042f");
+		std::cout << std::endl << "*-*-*-*-*-*-*" << std::endl << std::endl;
 		// T_DOUBLE
 		std::cout << ScalarConverter::STATE << "[test double 1]-inf" << ScalarConverter::RESET << std::endl;
 		ScalarConverter::convert("-inf");
@@ -67,6 +77,16 @@ int main(int argc, char **argv)
 		ScalarConverter::convert("+inf");
 		std::cout << std::endl << ScalarConverter::STATE << "[test double 3]nan" << ScalarConverter::RESET << std::endl;
 		ScalarConverter::convert("nan");
+		std::cout << std::endl << ScalarConverter::STATE << "[test double 4]0.012345" << ScalarConverter::RESET << std::endl;
+		ScalarConverter::convert("0.01234567890123456789");
+		std::cout << std::endl << ScalarConverter::STATE << "[test double 5]42.0" << ScalarConverter::RESET << std::endl;
+		ScalarConverter::convert("42.0");
+		std::cout << std::endl << ScalarConverter::STATE << "[test double 6]-42.0" << ScalarConverter::RESET << std::endl;
+		ScalarConverter::convert("-42.0");
+		std::cout << std::endl << ScalarConverter::STATE << "[test double 5]42.042" << ScalarConverter::RESET << std::endl;
+		ScalarConverter::convert("42.042");
+		std::cout << std::endl << ScalarConverter::STATE << "[test double 6]-42.042" << ScalarConverter::RESET << std::endl;
+		ScalarConverter::convert("-42.042");
 	} else {
 		ScalarConverter::convert(argv[1]);
 	}

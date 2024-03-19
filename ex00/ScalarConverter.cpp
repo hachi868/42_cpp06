@@ -115,8 +115,16 @@ void ScalarConverter::convertToChar(const std::string &literal, const TypeLitera
 				return ;
 			}
 			try {
-				float f_literal = static_cast<float>(std::atof(literal.c_str()));
-				std::cout << f_literal << std::endl;
+				//todo: stofとatof
+				float c_literal = std::stof(literal);
+				float c_literal_floor = c_literal;
+				if (std::floor(c_literal_floor) == c_literal)
+					std::cout << std::fixed << std::setprecision(1) << c_literal << std::endl;
+				else
+					std::cerr << ScalarConverter::MSG << "impossible (cannot be converted)" << ScalarConverter::RESET << std::endl;
+				//
+				//float f_literal = static_cast<float>(std::atof(literal.c_str()));
+				//std::cout << f_literal << std::endl;
 			} catch (const std::invalid_argument& e) {
 				std::cerr << ScalarConverter::MSG << "impossible (cannot be converted)" << ScalarConverter::RESET << std::endl;
 			} catch (const std::out_of_range& e) {
@@ -211,10 +219,11 @@ void ScalarConverter::convertToDouble(const std::string &literal, const TypeLite
 	}
 	try {
 		double c_literal = std::stod(literal);
-		if (std::floor(c_literal) == c_literal)
+		double c_literal_floor = c_literal;
+		if (std::floor(c_literal_floor) == c_literal)
 			std::cout << std::fixed << std::setprecision(1) << c_literal << std::endl;
 		else
-			std::cout << c_literal << std::endl;
+			std::cout << std::fixed << std::setprecision(literal.size()) << c_literal << std::endl;
 	} catch (const std::invalid_argument &e) {
 		std::cerr << ScalarConverter::MSG << "nan" << ScalarConverter::RESET << std::endl;
 	} catch (const std::out_of_range &e) {
