@@ -38,7 +38,7 @@ int ScalarConverter::countDot(const std::string &literal)
 
 bool ScalarConverter::checkIntOverFlow(const std::string &literal, size_t i)
 {
-	const std::string &intM = (literal[0] == '-') ? ScalarConverter::intMinAbs : ScalarConverter::intMaxAbs;
+	const std::string &intM = (literal[0] == '-') ? intMinAbs : intMaxAbs;
 	for (size_t k = 0; k < 10; k++)
 		if (literal[i + k] > intM[k]) return (true);
 	return (false);
@@ -100,18 +100,18 @@ void ScalarConverter::convertToChar(const std::string &literal, const TypeLitera
 					std::cout << "'" << static_cast<char>(i_literal) << "'" << std::endl;
 				else if(i_literal >= static_cast<int>(std::numeric_limits<char>::min()) \
 						&& i_literal <= static_cast<int>(std::numeric_limits<char>::max()))//todo: 校舎環境の範囲確認
-					std::cerr << ScalarConverter::MSG << "Non displayable" << ScalarConverter::RESET << std::endl;
+					std::cerr << MSG << "Non displayable" << RESET << std::endl;
 				else
-					std::cerr << ScalarConverter::MSG << "impossible (out of range)" << ScalarConverter::RESET << std::endl;
+					std::cerr << MSG << "impossible (out of range)" << RESET << std::endl;
 			} catch (const std::invalid_argument& e) {
-				std::cerr << ScalarConverter::MSG << "impossible (cannot be converted)" << ScalarConverter::RESET << std::endl;
+				std::cerr << MSG << "impossible (cannot be converted)" << RESET << std::endl;
 			} catch (const std::out_of_range& e) {
-				std::cerr << ScalarConverter::MSG << "impossible (out of range)" << ScalarConverter::RESET << std::endl;
+				std::cerr << MSG << "impossible (out of range)" << RESET << std::endl;
 			}
 			break;
 		case T_FLOAT:
 			if (literal == "-inff" || literal == "+inff" ||  literal == "nanf") {
-				std::cerr << ScalarConverter::MSG << "impossible (cannot be converted)" << ScalarConverter::RESET << std::endl;
+				std::cerr << MSG << "impossible (cannot be converted)" << RESET << std::endl;
 				return ;
 			}
 			try {
@@ -121,19 +121,19 @@ void ScalarConverter::convertToChar(const std::string &literal, const TypeLitera
 				if (std::floor(c_literal_floor) == c_literal)
 					std::cout << std::fixed << std::setprecision(1) << c_literal << std::endl;
 				else
-					std::cerr << ScalarConverter::MSG << "impossible (cannot be converted)" << ScalarConverter::RESET << std::endl;
+					std::cerr << MSG << "impossible (cannot be converted)" << RESET << std::endl;
 				//
 				//float f_literal = static_cast<float>(std::atof(literal.c_str()));
 				//std::cout << f_literal << std::endl;
 			} catch (const std::invalid_argument& e) {
-				std::cerr << ScalarConverter::MSG << "impossible (cannot be converted)" << ScalarConverter::RESET << std::endl;
+				std::cerr << MSG << "impossible (cannot be converted)" << RESET << std::endl;
 			} catch (const std::out_of_range& e) {
-				std::cerr << ScalarConverter::MSG << "impossible (out of range)" << ScalarConverter::RESET << std::endl;
+				std::cerr << MSG << "impossible (out of range)" << RESET << std::endl;
 			}
 			break;
 		case T_DOUBLE:
 			if (literal == "-inf" || literal == "+inf" ||  literal == "nan") {
-				std::cerr << ScalarConverter::MSG << "impossible (cannot be converted)" << ScalarConverter::RESET << std::endl;
+				std::cerr << MSG << "impossible (cannot be converted)" << RESET << std::endl;
 				return ;
 			}
 			try {
@@ -142,9 +142,9 @@ void ScalarConverter::convertToChar(const std::string &literal, const TypeLitera
 				iss >> d_literal;
 				std::cout << d_literal << std::endl;
 			} catch (const std::invalid_argument& e) {
-				std::cerr << ScalarConverter::MSG << "impossible (cannot be converted)" << ScalarConverter::RESET << std::endl;
+				std::cerr << MSG << "impossible (cannot be converted)" << RESET << std::endl;
 			} catch (const std::out_of_range& e) {
-				std::cerr << ScalarConverter::MSG << "impossible (out of range)" << ScalarConverter::RESET << std::endl;
+				std::cerr << MSG << "impossible (out of range)" << RESET << std::endl;
 			}
 			break;
 		case INVALID://todo: 例外
@@ -162,9 +162,9 @@ void ScalarConverter::convertToInt(const std::string &literal, const TypeLiteral
 		int c_literal = std::stoi(literal);
 		std::cout << c_literal << std::endl;
 	} catch (const std::invalid_argument &e) {
-		std::cerr << ScalarConverter::MSG << "impossible (cannot be converted)" << ScalarConverter::RESET << std::endl;
+		std::cerr << MSG << "impossible (cannot be converted)" << RESET << std::endl;
 	} catch (const std::out_of_range &e) {
-		std::cerr << ScalarConverter::MSG << "impossible (out of range)" << ScalarConverter::RESET << std::endl;
+		std::cerr << MSG << "impossible (out of range)" << RESET << std::endl;
 	}
 }
 void ScalarConverter::convertToFloat(const std::string &literal, const TypeLiteral &type)
@@ -176,24 +176,24 @@ void ScalarConverter::convertToFloat(const std::string &literal, const TypeLiter
 	}
 	//T_FLOAT
 	if (literal == "-inff" || literal == "+inff" ||  literal == "nanf") {
-		std::cerr << ScalarConverter::MSG << literal << ScalarConverter::RESET << std::endl;
+		std::cerr << MSG << literal << RESET << std::endl;
 		return ;
 	}
 	//T_DOUBLE
 	if (literal == "-inf" || literal == "+inf" ||  literal == "nan") {
-		std::cerr << ScalarConverter::MSG << literal << "f" << ScalarConverter::RESET << std::endl;
+		std::cerr << MSG << literal << "f" << RESET << std::endl;
 		return ;
 	}
 	try {
 		float c_literal = std::stof(literal);
 		std::cout << c_literal << "f" << std::endl;
 	} catch (const std::invalid_argument &e) {
-		std::cerr << ScalarConverter::MSG << "nanf" << ScalarConverter::RESET << std::endl;
+		std::cerr << MSG << "nanf" << RESET << std::endl;
 	} catch (const std::out_of_range &e) {
 		if (literal[0] == '-')
-			std::cerr << ScalarConverter::MSG << "-inff" << ScalarConverter::RESET << std::endl;
+			std::cerr << MSG << "-inff" << RESET << std::endl;
 		else
-			std::cerr << ScalarConverter::MSG << "+inff" << ScalarConverter::RESET << std::endl;
+			std::cerr << MSG << "+inff" << RESET << std::endl;
 	}
 }
 void ScalarConverter::convertToDouble(const std::string &literal, const TypeLiteral &type)
@@ -206,15 +206,15 @@ void ScalarConverter::convertToDouble(const std::string &literal, const TypeLite
 	}
 	//T_FLOAT
 	if (literal == "-inff" || literal == "+inff" ||  literal == "nanf") {
-		std::cerr << ScalarConverter::MSG;
+		std::cerr << MSG;
 		for (int i=0;i<(int)literal.size()-1;i++)
 			std::cerr << literal[i];
-		std::cerr << ScalarConverter::RESET << std::endl;
+		std::cerr << RESET << std::endl;
 		return ;
 	}
 	//T_DOUBLE
 	if (literal == "-inf" || literal == "+inf" ||  literal == "nan") {
-		std::cerr << ScalarConverter::MSG << literal << ScalarConverter::RESET << std::endl;
+		std::cerr << MSG << literal << RESET << std::endl;
 		return ;
 	}
 	try {
@@ -225,11 +225,11 @@ void ScalarConverter::convertToDouble(const std::string &literal, const TypeLite
 		else
 			std::cout << std::fixed << std::setprecision(literal.size()) << c_literal << std::endl;
 	} catch (const std::invalid_argument &e) {
-		std::cerr << ScalarConverter::MSG << "nan" << ScalarConverter::RESET << std::endl;
+		std::cerr << MSG << "nan" << RESET << std::endl;
 	} catch (const std::out_of_range &e) {
 		if (literal[0] == '-')
-			std::cerr << ScalarConverter::MSG << "-inf" << ScalarConverter::RESET << std::endl;
+			std::cerr << MSG << "-inf" << RESET << std::endl;
 		else
-			std::cerr << ScalarConverter::MSG << "+inf" << ScalarConverter::RESET << std::endl;
+			std::cerr << MSG << "+inf" << RESET << std::endl;
 	}
 }
