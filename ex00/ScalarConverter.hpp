@@ -23,14 +23,11 @@ public:
 
 private:
 	static TypeLiteral judgeTypes(const std::string &literal);
-	static void convertToChar(const std::string &literal, const TypeLiteral &type);
-	static void convertToInt(const std::string &literal, const TypeLiteral &type);
-	static void convertToFloat(const std::string &literal, const TypeLiteral &type);
-	static void convertToDouble(const std::string &literal, const TypeLiteral &type);
+	static void convertFromChar(const std::string &literal);
+	static void convertFromInt(const std::string &literal);
+	static void convertFromFloat(const std::string &literal);
+	static void convertFromDouble(const std::string &literal);
 	static int countDot(const std::string &literal);
-	static bool checkIntOverFlow(const std::string &literal, size_t i);
-	static const std::string intMaxAbs;
-	static const std::string intMinAbs;
 
 	//今回コンストラクタ、デストラクタは呼ばれない
 	ScalarConverter();
