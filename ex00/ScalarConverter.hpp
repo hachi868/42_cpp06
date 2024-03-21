@@ -33,10 +33,22 @@ private:
 	static void convertFromIntToChar(const int &literalInt);
 	static void convertFromIntToFloat(const int &literalInt);
 	static void convertFromIntToDouble(const int &literalInt);
+	//T_FLOAT
+	static void convertFromFloat(const std::string &literal);
+	static void convertFromFloatToChar(const float &literalFloat);
+	static void convertFromFloatToInt(const float &literalFloat);
+	static void convertFromFloatToDouble(const float &literalFloat);
+	//T_DOUBLE
+//	static void convertFromDouble(const std::string &literal);
+//	static void convertFromDoubleToChar(const double &literalDouble);
+//	static void convertFromDoubleToInt(const double &literalDouble);
+//	static void convertFromDoubleToFloat(const double &literalDouble);
 
 //	static void convertFromFloat(const std::string &literal);
 //	static void convertFromDouble(const std::string &literal);
 	static int countDot(const std::string &literal);
+	static void fixedTo0(const float &literalFloat);
+	static void fixedTo0(const double &literalDouble);
 
 	//今回コンストラクタ、デストラクタは呼ばれない
 	ScalarConverter();
