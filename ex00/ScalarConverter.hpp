@@ -23,15 +23,30 @@ public:
 
 private:
 	static TypeLiteral judgeTypes(const std::string &literal);
-	static void convertToChar(const std::string &literal, const TypeLiteral &type);
-	static void convertToInt(const std::string &literal, const TypeLiteral &type);
-	static void convertToFloat(const std::string &literal, const TypeLiteral &type);
-	static void convertToDouble(const std::string &literal, const TypeLiteral &type);
-	static int countDot(const std::string &literal);
-	static bool checkIntOverFlow(const std::string &literal, size_t i);
-	static int	countDecimalAfterDot(const std::string &literal);
-	static const std::string intMaxAbs;
-	static const std::string intMinAbs;
+	//T_CHAR
+	static void convertFromChar(const std::string &literal);
+	static void convertFromCharToInt(const char &literalChar);
+	static void convertFromCharToFloat(const char &literalChar);
+	static void convertFromCharToDouble(const char &literalChar);
+	//T_INT
+	static void convertFromInt(const std::string &literal);
+	static void convertFromIntToChar(const int &literalInt);
+	static void convertFromIntToFloat(const int &literalInt);
+	static void convertFromIntToDouble(const int &literalInt);
+	//T_FLOAT
+	static void convertFromFloat(const std::string &literal);
+	static void convertFromFloatToChar(const float &literalFloat);
+	static void convertFromFloatToInt(const float &literalFloat);
+	static void convertFromFloatToDouble(const float &literalFloat, unsigned int n);
+	//T_DOUBLE
+	static void convertFromDouble(const std::string &literal);
+	static void convertFromDoubleToChar(const double &literalDouble);
+	static void convertFromDoubleToInt(const double &literalDouble);
+	static void convertFromDoubleToFloat(const double &literalDouble, unsigned int n);
+	//helper
+	static void fixedToPrecision(const float &literalFloat, unsigned int n);
+	static void fixedToPrecision(const double &literalDouble, unsigned int n);
+	static unsigned int numDecimals(const std::string &literal);
 
 	//今回コンストラクタ、デストラクタは呼ばれない
 	ScalarConverter();
