@@ -9,12 +9,7 @@ static void destructor() {
 
 int main()
 {
-	Data *student;
-	try {
-		student = new Data;
-	} catch (const std::bad_alloc& e) {
-		std::cerr << Serializer::ALERT << "Memory allocation failed." << Serializer::RESET << std::endl;
-	}
+	Data *student = new Data;
 	student->number = 10;
 	student->name = "user1";
 	student->level = 3.1;
