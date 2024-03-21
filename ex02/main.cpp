@@ -45,59 +45,62 @@ Base *generate(void) {
 			}
 			break;
 		default:
-			ptrBase = nullptr;
+			ptrBase = NULL;
 			break;
 	}
 	return (ptrBase);
 }
 
 //dynamic_cast は、ランタイム型情報に基づいて、ポインタの型変換を行う演算子です。
-//キャストしてみて、nullptrにならなければその型
+//キャストしてみて、NULLにならなければその型
 void identify(Base *p) {
-	if (dynamic_cast<A*>(p) != nullptr) {
-		std::cout << "A" << std::endl;
+	if (dynamic_cast<A*>(p) != NULL) {
+		std::cout << "A";
 		return ;
 	}
 
-	if (dynamic_cast<B*>(p) != nullptr) {
-		std::cout << "B" << std::endl;
+	if (dynamic_cast<B*>(p) != NULL) {
+		std::cout << "B";
 		return ;
 	}
 
-	if (dynamic_cast<C*>(p) != nullptr) {
-		std::cout << "C" << std::endl;
+	if (dynamic_cast<C*>(p) != NULL) {
+		std::cout << "C";
 		return ;
 	}
 	std::cerr << ALERT << "It is not an pointer to an object of A, B, or C." << RESET << std::endl;
 }
 
-//参照をnullptrにバインドできないのでA *と同様にはできない
+//参照をNULLにバインドできないのでA *と同様にはできない
 void identify(Base &p) {
-	if (dynamic_cast<A*>(&p) != nullptr) {
+	try {
+		(void)dynamic_cast<A&>(p);
 		std::cout << "A" << std::endl;
-		return;
-	}
-
-	if (dynamic_cast<B*>(&p) != nullptr) {
+		return ;
+	} catch (const std::bad_cast &e) {}
+	try {
+		(void)dynamic_cast<B&>(p);
 		std::cout << "B" << std::endl;
-		return;
-	}
-
-	if (dynamic_cast<C*>(&p) != nullptr) {
+		return ;
+	} catch (const std::bad_cast &e) {}
+	try {
+		(void)dynamic_cast<C&>(p);
 		std::cout << "C" << std::endl;
-		return;
+	} catch (const std::bad_cast &e) {
+		std::cerr << ALERT << "It is not an reference to an object of A, B, or C." << RESET << std::endl;
 	}
-	std::cerr << ALERT << "It is not an reference to an object of A, B, or C." << RESET << std::endl;
 }
 
 int main()
 {
 	Base *ptrBase = generate();
-	if (ptrBase == nullptr) {
+	if (ptrBase == NULL) {
 		std::cerr << ALERT << "Generate Base pointer is failed." << RESET << std::endl;
 		return (1);
 	}
+	std::cout << "[ptr] ";
 	identify(ptrBase);
+	std::cout << std::endl << "[ref] ";
 	identify(*ptrBase);
 	delete ptrBase;
 	return (0);
