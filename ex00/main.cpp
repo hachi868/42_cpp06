@@ -109,6 +109,8 @@ int main(int argc, char **argv)
 		ScalarConverter::convert("42.f");
 		std::cout << std::endl << ScalarConverter::STATE << "[test float 20]42.12fg" << ScalarConverter::RESET << std::endl;
 		ScalarConverter::convert("42.12fg");
+		std::cout << std::endl << ScalarConverter::STATE << "[test float 21]42f" << ScalarConverter::RESET << std::endl;
+		ScalarConverter::convert("42f");
 
 		std::cout << std::endl << "*-*-*-*-*-*-*" << std::endl << std::endl;
 		// T_DOUBLE
@@ -180,7 +182,5 @@ int main(int argc, char **argv)
 	} else {
 		ScalarConverter::convert(argv[1]);
 	}
-//	std::cout << std::endl << std::stof("Nan") << ScalarConverter::RESET << std::endl;
-//	std::cout << std::endl << std::stof("inFinitf") << ScalarConverter::RESET << std::endl;
 	return (0);
 }
