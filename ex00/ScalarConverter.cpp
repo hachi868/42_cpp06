@@ -23,33 +23,12 @@ void ScalarConverter::convert(const std::string &literal)
 			convertFromFloat(literal);
 			break;
 		case T_DOUBLE:
-			//convertFromDouble(literal);
+			convertFromDouble(literal);
 			break;
 		case INVALID:
 			std::cerr << ALERT << "Error: invalid literal" << RESET << std::endl;
 			break;
 	}
-}
-
-int ScalarConverter::countDot(const std::string &literal)
-{
-	int	counter = 0;
-	for (size_t i = 0; i < literal.size(); i++)
-		if (literal[i] == '.') counter++;
-	return (counter);
-}
-
-void ScalarConverter::fixedTo0(const float &literalFloat) {
-	std::stringstream ss;
-	ss << std::fixed << std::setprecision(1) << literalFloat;
-	std::string str = ss.str();
-	std::cout << str << "f" << std::endl;
-}
-void ScalarConverter::fixedTo0(const double &literalDouble) {
-	std::stringstream ss;
-	ss << std::fixed << std::setprecision(1) << literalDouble;
-	std::string str = ss.str();
-	std::cout << str << std::endl;
 }
 
 TypeLiteral ScalarConverter::judgeTypes(const std::string &literal)
@@ -116,20 +95,6 @@ void ScalarConverter::convertFromCharToFloat(const char &literalChar) {
 void ScalarConverter::convertFromCharToDouble(const char &literalChar) {
 	std::cout << "double: ";
 	std::cout << std::fixed << std::setprecision(1) << static_cast<double>(literalChar) << std::endl;
-//	if (literal == "-inf" || literal == "+inf" ||  literal == "nan") {
-//		std::cerr << MSG << "impossible (cannot be converted)" << RESET << std::endl;
-//		return ;
-//	}
-//	try {
-//		std::istringstream iss(literal);
-//		double d_literal;
-//		iss >> d_literal;
-//		std::cout << d_literal << std::endl;
-//	} catch (const std::invalid_argument& e) {
-//		std::cerr << MSG << "impossible (cannot be converted)" << RESET << std::endl;
-//	} catch (const std::out_of_range& e) {
-//		std::cerr << MSG << "impossible (out of range)" << RESET << std::endl;
-//	}
 }
 
 //T_INT
@@ -179,6 +144,7 @@ void ScalarConverter::convertFromIntToDouble(const int &literalInt) {
 		std::cerr << MSG << "impossible (out of range)" << RESET << std::endl;
 	}
 }
+
 //T_FLOAT
 void ScalarConverter::convertFromFloat(const std::string &literal) {
 	float literalFloat;
@@ -199,10 +165,12 @@ void ScalarConverter::convertFromFloat(const std::string &literal) {
 	}
 }
 void ScalarConverter::convertFromFloatToChar(const float &literalFloat) {
+	//inf,nanfならimpossible表記
 	if (isinf(literalFloat) || isnan(literalFloat)) {
 		std::cout << "char: impossible" << std::endl;
 		return ;
 	}
+	//intを経由してcharにcast（循環対策）
 	try {
 		int literalInt = static_cast<int>(literalFloat);
 		convertFromIntToChar(literalInt);
@@ -213,10 +181,12 @@ void ScalarConverter::convertFromFloatToChar(const float &literalFloat) {
 	}
 }
 void ScalarConverter::convertFromFloatToInt(const float &literalFloat) {
+	//inf,nanfならimpossible表記
 	if (isinf(literalFloat) || isnan(literalFloat)) {
 		std::cout << "int: impossible" << std::endl;
 		return ;
 	}
+	//intにcast
 	try {
 		int literalInt = static_cast<int>(literalFloat);
 		std::cout << "int: " << literalInt << std::endl;
@@ -228,12 +198,11 @@ void ScalarConverter::convertFromFloatToInt(const float &literalFloat) {
 }
 void ScalarConverter::convertFromFloatToDouble(const float &literalFloat) {
 	std::cout << "double: ";
-
 	try {
 		double literalFloatToDouble = static_cast<double>(literalFloat);
 		if (std::floor(literalFloatToDouble) == literalFloatToDouble)//infはここに入る
 			fixedTo0(literalFloatToDouble);
-		else
+		else//nanはここに入る
 			std::cout << literalFloatToDouble << std::endl;
 	} catch (const std::invalid_argument &e) {
 		std::cerr << MSG << "impossible (cannot be converted)" << RESET << std::endl;
@@ -241,34 +210,77 @@ void ScalarConverter::convertFromFloatToDouble(const float &literalFloat) {
 		std::cerr << MSG << "impossible (out of range)" << RESET << std::endl;
 	}
 }
-//void ScalarConverter::convertFromInt(const std::string &literal)
-//{
-//	std::cout << "int: ";
-//	if (type == T_CHAR){
-//		std::cout << (int)literal[0] << std::endl;
-//		return ;
-//	}
-//	try {
-//		int c_literal = std::stoi(literal);
-//		std::cout << c_literal << std::endl;
-//	} catch (const std::invalid_argument &e) {
-//		std::cerr << MSG << "impossible (cannot be converted)" << RESET << std::endl;
-//	} catch (const std::out_of_range &e) {
-//		std::cerr << MSG << "impossible (out of range)" << RESET << std::endl;
-//	}
-//}
+
+//T_FLOAT
+void ScalarConverter::convertFromDouble(const std::string &literal) {
+	double literalDouble;
+	try {
+		literalDouble = std::stod(literal);
+		convertFromDoubleToChar(literalDouble);
+		convertFromDoubleToInt(literalDouble);
+		convertFromDoubleToFloat(literalDouble);
+		std::cout << "double: ";
+
+		int max_digits = std::numeric_limits<double>::digits10;
+		if (std::floor(literalDouble) == literalDouble)//infはここに入る
+			fixedTo0(literalDouble);
+		else//nanfはここに入る
+			std::cout << std::setprecision(max_digits) << literalDouble << std::endl;
+	} catch (const std::invalid_argument &e) {
+		std::cerr << MSG << "impossible (cannot be converted)" << RESET << std::endl;
+	} catch (const std::out_of_range &e) {
+		std::cerr << MSG << "impossible (out of range)" << RESET << std::endl;
+	}
+}
+void ScalarConverter::convertFromDoubleToChar(const double &literalDouble) {
+	//inf,nanfならimpossible表記
+	if (isinf(literalDouble) || isnan(literalDouble)) {
+		std::cout << "char: impossible" << std::endl;
+		return ;
+	}
+	//intを経由してcharにcast（循環対策）
+	try {
+		int literalInt = static_cast<int>(literalDouble);
+		convertFromIntToChar(literalInt);
+	} catch (const std::invalid_argument &e) {
+		std::cerr << MSG << "impossible (cannot be converted)" << RESET << std::endl;
+	} catch (const std::out_of_range &e) {
+		std::cerr << MSG << "impossible (out of range)" << RESET << std::endl;
+	}
+}
+void ScalarConverter::convertFromDoubleToInt(const double &literalDouble) {
+	//inf,nanfならimpossible表記
+	if (isinf(literalDouble) || isnan(literalDouble)) {
+		std::cout << "int: impossible" << std::endl;
+		return ;
+	}
+	//intにcast
+	try {
+		int literalInt = static_cast<int>(literalDouble);
+		std::cout << "int: " << literalInt << std::endl;
+	} catch (const std::invalid_argument &e) {
+		std::cerr << MSG << "impossible (cannot be converted)" << RESET << std::endl;
+	} catch (const std::out_of_range &e) {
+		std::cerr << MSG << "impossible (out of range)" << RESET << std::endl;
+	}
+}
+void ScalarConverter::convertFromDoubleToFloat(const double &literalDouble) {
+	std::cout << "float: ";
+	try {
+		double literalDoubleToFloat = static_cast<float>(literalDouble);
+		if (std::floor(literalDoubleToFloat) == literalDoubleToFloat)//infはここに入る
+			fixedTo0(literalDoubleToFloat);
+		else//nanはここに入る
+			std::cout << literalDoubleToFloat << std::endl;
+	} catch (const std::invalid_argument &e) {
+		std::cerr << MSG << "impossible (cannot be converted)" << RESET << std::endl;
+	} catch (const std::out_of_range &e) {
+		std::cerr << MSG << "impossible (out of range)" << RESET << std::endl;
+	}
+}
+
 //void ScalarConverter::convertFromFloat(const std::string &literal)
 //{
-//	std::cout << "float: ";
-//	if (type == T_CHAR){
-//		std::cout << std::fixed << std::setprecision(1) << static_cast<float>(literal[0]) << "f" << std::endl;
-//		return ;
-//	}
-//	//T_FLOAT
-//	if (literal == "-inff" || literal == "+inff" ||  literal == "nanf") {
-//		std::cerr << MSG << literal << RESET << std::endl;
-//		return ;
-//	}
 //	//T_DOUBLE
 //	if (literal == "-inf" || literal == "+inf" ||  literal == "nan") {
 //		std::cerr << MSG << literal << "f" << RESET << std::endl;
@@ -288,20 +300,6 @@ void ScalarConverter::convertFromFloatToDouble(const float &literalFloat) {
 //}
 //void ScalarConverter::convertFromDouble(const std::string &literal)
 //{
-//	(void)type;
-//	std::cout << "double: ";
-//	if (type == T_CHAR){
-//		std::cout << std::fixed << std::setprecision(1) << static_cast<double>(literal[0]) << std::endl;
-//		return ;
-//	}
-//	//T_FLOAT
-//	if (literal == "-inff" || literal == "+inff" ||  literal == "nanf") {
-//		std::cerr << MSG;
-//		for (int i=0;i<(int)literal.size()-1;i++)
-//			std::cerr << literal[i];
-//		std::cerr << RESET << std::endl;
-//		return ;
-//	}
 //	//T_DOUBLE
 //	if (literal == "-inf" || literal == "+inf" ||  literal == "nan") {
 //		std::cerr << MSG << literal << RESET << std::endl;
@@ -323,3 +321,25 @@ void ScalarConverter::convertFromFloatToDouble(const float &literalFloat) {
 //			std::cerr << MSG << "+inf" << RESET << std::endl;
 //	}
 //}
+
+//helper
+int ScalarConverter::countDot(const std::string &literal)
+{
+	int	counter = 0;
+	for (size_t i = 0; i < literal.size(); i++)
+		if (literal[i] == '.') counter++;
+	return (counter);
+}
+
+void ScalarConverter::fixedTo0(const float &literalFloat) {
+	std::stringstream ss;
+	ss << std::fixed << std::setprecision(1) << literalFloat;
+	std::string str = ss.str();
+	std::cout << str << "f" << std::endl;
+}
+void ScalarConverter::fixedTo0(const double &literalDouble) {
+	std::stringstream ss;
+	ss << std::fixed << std::setprecision(1) << literalDouble;
+	std::string str = ss.str();
+	std::cout << str << std::endl;
+}
