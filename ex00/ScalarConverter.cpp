@@ -12,7 +12,7 @@ const std::string ScalarConverter::MSG = "\033[34m";
 void ScalarConverter::convert(const std::string &literal)
 {
 	TypeLiteral typeLiteral = judgeTypes(literal);
-	std::cout << "typeLiteral " << typeLiteral << std::endl;
+	//std::cout << "typeLiteral " << typeLiteral << std::endl;
 	switch (typeLiteral) {
 		case T_CHAR:
 			convertFromChar(literal);
