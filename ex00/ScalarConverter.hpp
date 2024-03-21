@@ -37,16 +37,16 @@ private:
 	static void convertFromFloat(const std::string &literal);
 	static void convertFromFloatToChar(const float &literalFloat);
 	static void convertFromFloatToInt(const float &literalFloat);
-	static void convertFromFloatToDouble(const float &literalFloat);
+	static void convertFromFloatToDouble(const float &literalFloat, unsigned int n);
 	//T_DOUBLE
 	static void convertFromDouble(const std::string &literal);
 	static void convertFromDoubleToChar(const double &literalDouble);
 	static void convertFromDoubleToInt(const double &literalDouble);
-	static void convertFromDoubleToFloat(const double &literalDouble);
+	static void convertFromDoubleToFloat(const double &literalDouble, unsigned int n);
 	//helper
-	static int countDot(const std::string &literal);
-	static void fixedTo0(const float &literalFloat);
-	static void fixedTo0(const double &literalDouble);
+	static void fixedToPrecision(const float &literalFloat, unsigned int n);
+	static void fixedToPrecision(const double &literalDouble, unsigned int n);
+	static unsigned int numDecimals(const std::string &literal);
 
 	//今回コンストラクタ、デストラクタは呼ばれない
 	ScalarConverter();
