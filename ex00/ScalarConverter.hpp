@@ -1,5 +1,5 @@
-#ifndef __SCALAR_CONVERTER_H__
-#define __SCALAR_CONVERTER_H__
+#ifndef SCALAR_CONVERTER_HPP
+#define SCALAR_CONVERTER_HPP
 
 #include <iostream>
 
@@ -55,4 +55,4 @@ private:
 	~ScalarConverter();
 };
 
-#endif //__SCALAR_CONVERTER_H__
+#endif // SCALAR_CONVERTER_HPP
