@@ -1,7 +1,7 @@
 PROG := convert
 
 CXX := c++
-CXXFLAGS := -Wall -Wextra -Werror
+CXXFLAGS := -Wall -Wextra -Werror -MMD -MP
 CXXFLAGS += -std=c++98
 SRCS =	main.cpp \
 		ScalarConverter.cpp

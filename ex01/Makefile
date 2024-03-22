@@ -1,7 +1,7 @@
 PROG := serializer
 
 CXX := c++
-CXXFLAGS := -Wall -Wextra -Werror
+CXXFLAGS := -Wall -Wextra -Werror -MMD -MP
 CXXFLAGS += -std=c++98
 SRCS =	main.cpp \
 		Serializer.cpp
