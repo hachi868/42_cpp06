@@ -17,36 +17,18 @@ const std::string ALERT = "\033[31m";
 const std::string MSG = "\033[34m";
 
 Base *generate(void) {
-	struct timeval tv;
-	gettimeofday(&tv, NULL);//マイクロ秒
-	srand(static_cast<unsigned int>(tv.tv_usec));
 	int i = rand() % 3;
 	Base *ptrBase;
 	switch (i) {
-		case 0:
-			try {
-				ptrBase = new A;
-			} catch (const std::bad_alloc& e) {
-				std::cerr << ALERT << "Memory allocation failed." << RESET << std::endl;
-			}
-			break;
-		case 1:
-			try {
-				ptrBase = new B;
-			} catch (const std::bad_alloc& e) {
-				std::cerr << ALERT << "Memory allocation failed." << RESET << std::endl;
-			}
-			break;
-		case 2:
-			try {
-				ptrBase = new C;
-			} catch (const std::bad_alloc& e) {
-				std::cerr << ALERT << "Memory allocation failed." << RESET << std::endl;
-			}
-			break;
-		default:
-			ptrBase = NULL;
-			break;
+	case 0:
+		ptrBase = new A;
+		break;
+	case 1:
+		ptrBase = new B;
+		break;
+	case 2:
+		ptrBase = new C;
+		break;
 	}
 	return (ptrBase);
 }
@@ -91,17 +73,31 @@ void identify(Base &p) {
 	}
 }
 
-int main()
-{
+int doGenerate() {
 	Base *ptrBase = generate();
 	if (ptrBase == NULL) {
 		std::cerr << ALERT << "Generate Base pointer is failed." << RESET << std::endl;
 		return (1);
 	}
-	std::cout << "[ptr] ";
+	std::cout << "------" << std::endl;
 	identify(ptrBase);
-	std::cout << std::endl << "[ref] ";
+	std::cout << " : ";
 	identify(*ptrBase);
+	std::cout << std::endl;
 	delete ptrBase;
+	return (0);
+}
+
+int main() {
+	struct timeval tv;
+	gettimeofday(&tv, NULL); // マイクロ秒
+	srand(static_cast<unsigned int>(tv.tv_usec));
+
+	int i = 0;
+	while (i < 10)
+	{
+		doGenerate();
+		i++;
+	}
 	return (0);
 }
