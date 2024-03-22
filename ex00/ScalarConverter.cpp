@@ -2,6 +2,7 @@
 #include <iomanip>//setprecision
 #include <limits> // std::numeric_limits
 #include <sstream>
+#include <cmath> //floor, innan, isinfs
 
 const std::string ScalarConverter::RESET = "\033[0m";
 const std::string ScalarConverter::DEBUG = "\033[90m";
