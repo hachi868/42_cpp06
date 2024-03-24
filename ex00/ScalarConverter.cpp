@@ -46,9 +46,12 @@ TypeLiteral ScalarConverter::judgeTypes(const std::string &literal)
 				return (T_FLOAT);
 			else
 				return (T_DOUBLE);
-		} else if(tmpLiteralDouble < std::numeric_limits<float>::min() || tmpLiteralDouble > std::numeric_limits<float>::max()) {
+		} else if(tmpLiteralDouble < -std::numeric_limits<float>::max() || tmpLiteralDouble > std::numeric_limits<float>::max()) {
+			//std::numeric_limits<float>::min()は最小の正の正規化値
 			//doubleにはおさまるがfloatの範囲に収まらない
-			//return (T_FLOAT);
+			if (isSuffixFloat(literal, literal.size()-1)) {
+				return (T_FLOAT);
+			}
 		}
 	} catch (const std::invalid_argument &e) {} catch (const std::out_of_range &e) {
 		return (T_DOUBLE);
