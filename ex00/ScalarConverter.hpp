@@ -2,6 +2,10 @@
 #define SCALAR_CONVERTER_HPP
 
 #include <iostream>
+#include <iomanip>//setprecision
+#include <limits> // std::numeric_limits
+#include <sstream>
+#include <cmath> //floor
 
 enum TypeLiteral {
 	T_CHAR,
@@ -47,6 +51,12 @@ private:
 	static void fixedToPrecision(const float &literalFloat, unsigned int n);
 	static void fixedToPrecision(const double &literalDouble, unsigned int n);
 	static unsigned int numDecimals(const std::string &literal);
+	static bool ftIsInff(const float &literalFloat);
+	static bool ftIsInf(const double &literalDouble);
+	static bool ftIsNanf(const float &literalFloat);
+	static bool ftIsNan(const double &literalDouble);
+	static bool isSuffixFloat(const std::string &literal, unsigned int end);
+	static bool isInfFloat(const std::string &literal);
 
 	//今回コンストラクタ、デストラクタは呼ばれない
 	ScalarConverter();
