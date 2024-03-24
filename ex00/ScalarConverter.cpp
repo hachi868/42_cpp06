@@ -29,7 +29,6 @@ void ScalarConverter::convert(const std::string &literal)
 	}
 }
 
-//todo: int charならint優先
 TypeLiteral ScalarConverter::judgeTypes(const std::string &literal)
 {
 	//nan,inf判定されたらT_FLOAT or T_DOUBLE判定
@@ -46,16 +45,18 @@ TypeLiteral ScalarConverter::judgeTypes(const std::string &literal)
 				return (T_FLOAT);
 			else
 				return (T_DOUBLE);
-		} else if(tmpLiteralDouble < -std::numeric_limits<float>::max() || tmpLiteralDouble > std::numeric_limits<float>::max()) {
-			//std::numeric_limits<float>::min()は最小の正の正規化値
-			//doubleにはおさまるがfloatの範囲に収まらない
-			if (isSuffixFloat(literal, literal.size()-1)) {
-				return (T_FLOAT);
-			}
 		}
 	} catch (const std::invalid_argument &e) {} catch (const std::out_of_range &e) {
 		return (T_DOUBLE);
 	}
+	//infなどの文字列ではなく、数字.数字f表記でfloatではinfの範囲にあるものを判定
+	try {
+		(void)std::stof(literal);
+	} catch (const std::invalid_argument &e) {} catch (const std::out_of_range &e) {
+		if (isSuffixFloat(literal, literal.size()-1))
+			return (T_FLOAT);
+	}
+
 	//.が含まれない => int or char / 1つ含まれる => 浮動小数 /2つ以上 => invalid
 	int lenDot = countDots(literal);
 	if (lenDot == 0) {
@@ -112,8 +113,8 @@ void ScalarConverter::convertFromInt(const std::string &literal)
 		convertFromIntToFloat(literalInt);
 		convertFromIntToDouble(literalInt);
 	} catch (const std::invalid_argument &e) {
-		std::cerr << "int: " << MSG << "impossible (cannot be converted)" << RESET << std::endl;
-	} catch (const std::out_of_range &e) {
+		std::cerr << MSG << "impossible (cannot be converted)" << RESET << std::endl;
+	} catch (const std::out_of_range &e) {//overflow
 		std::cerr << "char: " << MSG << "impossible (out of range)" << RESET << std::endl;
 		std::cerr << "int: " << MSG << "impossible (out of range)" << RESET << std::endl;
 		std::cerr << "float: " << MSG << "impossible (cannot be converted)" << RESET << std::endl;
