@@ -9,7 +9,7 @@ const std::string ScalarConverter::MSG = "\033[34m";
 void ScalarConverter::convert(const std::string &literal)
 {
 	TypeLiteral typeLiteral = judgeTypes(literal);
-	std::cout << "typeLiteral " << typeLiteral << std::endl;
+	//std::cout << "typeLiteral " << typeLiteral << std::endl;
 	switch (typeLiteral) {
 		case T_CHAR:
 			convertFromChar(literal);
@@ -50,6 +50,7 @@ TypeLiteral ScalarConverter::judgeTypes(const std::string &literal)
 		return (T_DOUBLE);
 	}
 	//infなどの文字列ではなく、数字.数字f表記でfloatではinfの範囲にあるものを判定
+	//doubleでは扱えるがfloatではinfになるものはstofからout_of_rangeがthrowされる
 	try {
 		(void)std::stof(literal);
 	} catch (const std::invalid_argument &e) {} catch (const std::out_of_range &e) {
@@ -154,10 +155,9 @@ void ScalarConverter::convertFromIntToDouble(const int &literalInt) {
 
 //T_FLOAT
 void ScalarConverter::convertFromFloat(const std::string &literal) {
-	//doubleでは扱えるがfloatではinfになるものはstofからout_of_rangeがthrowされる
 	try {
 		float literalFloat = std::stof(literal);
-		std::cout << "ftIsInff: " << ftIsInff(literalFloat) << " /ftIsNanf: " << ftIsNanf(literalFloat) << std::endl;
+		//std::cout << "ftIsInff: " << ftIsInff(literalFloat) << " /ftIsNanf: " << ftIsNanf(literalFloat) << std::endl;
 		unsigned int precision = countDecimals(literal);
 		convertFromFloatToChar(literalFloat);
 		convertFromFloatToInt(literalFloat);
@@ -190,9 +190,14 @@ void ScalarConverter::convertFromFloatToChar(const float &literalFloat) {
 		std::cerr << "char: " << MSG << "impossible (out of range)" << RESET << std::endl;
 		return ;
 	}
+	//intの範囲を超えないか確認
+	if (literalFloat < std::numeric_limits<int>::min() || literalFloat > std::numeric_limits<int>::max()) {
+		std::cerr << "char: " << MSG << "impossible (out of range)" << RESET << std::endl;
+		return ;
+	}
 	//intを経由してcharにcast（循環対策）
 	try {
-		int literalInt = static_cast<int>(literalFloat);//todo:overflow確認必要。未定義動作
+		int literalInt = static_cast<int>(literalFloat);
 		convertFromIntToChar(literalInt);
 	} catch (const std::invalid_argument &e) {
 		std::cerr << MSG << "impossible (cannot be converted)" << RESET << std::endl;
@@ -208,9 +213,8 @@ void ScalarConverter::convertFromFloatToInt(const float &literalFloat) {
 		std::cerr << "int: " << MSG << "impossible (out of range)" << RESET << std::endl;
 		return ;
 	}
-	//overflow判定のため一旦longにキャスト
-	long literalLong = static_cast<long>(literalFloat);//todo:overflow確認必要。未定義動作
-	if (literalLong > INT_MAX || literalLong < INT_MIN) {//todo:INT_MIN numeril使う方が良さそう　runtime error
+	//intの範囲を超えないか確認
+	if (literalFloat < std::numeric_limits<int>::min() || literalFloat > std::numeric_limits<int>::max()) {
 		std::cerr << "int: " << MSG << "impossible (out of range)" << RESET << std::endl;
 		return ;
 	}
@@ -249,7 +253,7 @@ void ScalarConverter::convertFromDouble(const std::string &literal) {
 		convertFromDoubleToInt(literalDouble);
 		convertFromDoubleToFloat(literalDouble, precision);
 		std::cout << "double: ";
-		if (std::floor(literalDouble) == literalDouble)//infはここに入る
+		if (std::floor(literalDouble) == literalDouble)
 			fixedToPrecision(literalDouble, 1);
 		else { //nanfはここに入る
 			fixedToPrecision(literalDouble, precision);
@@ -257,13 +261,21 @@ void ScalarConverter::convertFromDouble(const std::string &literal) {
 	} catch (const std::invalid_argument &e) {
 		std::cerr << MSG << "impossible (cannot be converted)" << RESET << std::endl;
 	} catch (const std::out_of_range &e) {
+		//infがここに入らない
 		std::cerr << MSG << "impossible (out of range)" << RESET << std::endl;
 	}
 }
 void ScalarConverter::convertFromDoubleToChar(const double &literalDouble) {
-	//inf,nanfならimpossible表記
-	if (ftIsInf(literalDouble) || ftIsNan(literalDouble)) {
+	if (ftIsNanf(literalDouble)) {
 		std::cerr << "char: " << MSG << "impossible (cannot be converted)" << RESET << std::endl;
+		return ;
+	} else if (ftIsInff(literalDouble)) {
+		std::cerr << "char: " << MSG << "impossible (out of range)" << RESET << std::endl;
+		return ;
+	}
+	//intの範囲を超えないか確認
+	if (literalDouble < std::numeric_limits<int>::min() || literalDouble > std::numeric_limits<int>::max()) {
+		std::cerr << "char: " << MSG << "impossible (out of range)" << RESET << std::endl;
 		return ;
 	}
 	//intを経由してcharにcast（循環対策）
@@ -277,14 +289,15 @@ void ScalarConverter::convertFromDoubleToChar(const double &literalDouble) {
 	}
 }
 void ScalarConverter::convertFromDoubleToInt(const double &literalDouble) {
-	//inf,nanfならimpossible表記
-	if (ftIsInf(literalDouble) || ftIsNan(literalDouble)) {
+	if (ftIsNanf(literalDouble)) {
 		std::cerr << "int: " << MSG << "impossible (cannot be converted)" << RESET << std::endl;
 		return ;
+	} else if (ftIsInff(literalDouble)) {
+		std::cerr << "int: " << MSG << "impossible (out of range)" << RESET << std::endl;
+		return ;
 	}
-	//overflow判定のため一旦longにキャスト
-	long literalLong = static_cast<long>(literalDouble);
-	if (literalLong > INT_MAX || literalLong < INT_MIN) {
+	//intの範囲を超えないか確認
+	if (literalDouble < std::numeric_limits<int>::min() || literalDouble > std::numeric_limits<int>::max()) {
 		std::cerr << "int: " << MSG << "impossible (out of range)" << RESET << std::endl;
 		return ;
 	}
@@ -300,6 +313,11 @@ void ScalarConverter::convertFromDoubleToInt(const double &literalDouble) {
 }
 void ScalarConverter::convertFromDoubleToFloat(const double &literalDouble, unsigned int n) {
 	std::cout << "float: ";
+	//floatの範囲を超えないか確認
+	if (literalDouble < -std::numeric_limits<float>::max() || literalDouble > std::numeric_limits<float>::max()) {
+		std::cerr << "inff" << std::endl;
+		return ;
+	}
 	try {
 		float literalDoubleToFloat = static_cast<float>(literalDouble);
 		if (std::floor(literalDoubleToFloat) == literalDoubleToFloat)//infはここに入る
