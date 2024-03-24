@@ -51,12 +51,15 @@ private:
 	static void fixedToPrecision(const float &literalFloat, unsigned int n);
 	static void fixedToPrecision(const double &literalDouble, unsigned int n);
 	static unsigned int countDecimals(const std::string &literal);
+	static unsigned int countDots(const std::string &literal);
 	static bool ftIsInff(const float &literalFloat);
 	static bool ftIsInf(const double &literalDouble);
 	static bool ftIsNanf(const float &literalFloat);
 	static bool ftIsNan(const double &literalDouble);
 	static bool isSuffixFloat(const std::string &literal, unsigned int end);
 	static bool isInfFloat(const std::string &literal);
+	static bool isInteger(const std::string &literal);
+	static bool isFloatingPoint(const std::string &literal, unsigned int end);
 
 	//今回コンストラクタ、デストラクタは呼ばれない
 	ScalarConverter();

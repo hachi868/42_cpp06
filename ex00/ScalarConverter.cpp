@@ -32,7 +32,6 @@ void ScalarConverter::convert(const std::string &literal)
 //todo: int charならint優先
 TypeLiteral ScalarConverter::judgeTypes(const std::string &literal)
 {
-	size_t i = 0, j = 0;
 	//nan,inf判定されたらT_FLOAT or T_DOUBLE判定
 	try {
 		double tmpLiteralDouble = std::stod(literal);
@@ -49,51 +48,31 @@ TypeLiteral ScalarConverter::judgeTypes(const std::string &literal)
 				return (T_DOUBLE);
 		} else if(tmpLiteralDouble < std::numeric_limits<float>::min() || tmpLiteralDouble > std::numeric_limits<float>::max()) {
 			//doubleにはおさまるがfloatの範囲に収まらない
-			return (T_FLOAT);
+			//todo: 42.042とかがここでひっかかkる
+			//return (T_FLOAT);
 		}
 	} catch (const std::invalid_argument &e) {
 		return (INVALID);
 	} catch (const std::out_of_range &e) {
 		return T_DOUBLE;
-	}//exeptionから抜けてエラー終了するケースがある
-	int lenDot = 0;
-	if (literal.size() == 1 && literal[0] >= ' ' && literal[0] <= '~') return (T_CHAR);
-	//頭の符号はOK
-	if (literal[0] == '-' || literal[0] == '+') i++;
-	//jで数字の桁数を数える。数字の後の文字は無視
-	while (literal[i + j + lenDot]) {
-		//「.」
-		if (literal[i + j + lenDot] == '.') {
-			//1.23.4 => doubleの1.23
-			if (lenDot > 0) {
-				if (j > 0)
-					return (T_DOUBLE);
-				else
-					return (INVALID);
-			}
-			lenDot++;
-			//..と2つ続くならINVALID
-			if (i + j + lenDot < literal.size() && literal[i + j + lenDot] == '.')
-				return (INVALID);
-		}
-		//数字連続してOK
-		while (literal[i + j + lenDot] && isdigit(literal[i + j + lenDot])) j++;
-		//.の後、数字の直後にfがつけばT_FLOAT
-		if (isSuffixFloat(literal, i + j + lenDot)) {
-			if (lenDot > 0) return (T_FLOAT);
-			else if (j == 0) return (INVALID);
-			else return (T_INT);
-		}
-		else if (literal[i + j + lenDot] != '.') {//fでも数字でも.でもない。
-			if (lenDot > 0 && j > 0) {
-				return (T_DOUBLE);
-			}
-			else if (j == 0) return (INVALID);
-			return (T_INT);
-		}
 	}
-	if (j > 0) return (T_DOUBLE);
-	else return (INVALID);
+	//.が含まれない => int or char / 1つ含まれる => 浮動小数 /2つ以上 => invalid
+	int lenDot = countDots(literal);
+	std::cout << "lenDot: " << lenDot << std::endl;
+	if (lenDot == 0) {
+		if (isInteger(literal))
+			return (T_INT);
+		else if (literal.size() == 1 && literal[0] >= ' ' && literal[0] <= '~')
+			return (T_CHAR);
+		else
+			return (INVALID);
+	} else if (lenDot == 1) {
+		if (isInfFloat(literal) && isFloatingPoint(literal, literal.size() - 1))
+			return (T_FLOAT);
+		else if (isFloatingPoint(literal, literal.size()))
+			return (T_DOUBLE);
+	}
+	return (INVALID);
 }
 
 //T_CHAR
@@ -336,10 +315,16 @@ void ScalarConverter::fixedToPrecision(const double &literalDouble, unsigned int
 unsigned int ScalarConverter::countDecimals(const std::string &literal) {
 	int	counter = 0;
 	bool isCount = false;
-	for (size_t i = 0; i < literal.size(); i++) {
+	for (unsigned int i = 0; i < literal.size(); i++) {
 		if (isCount && isdigit(literal[i])) counter++;
 		if (literal[i] == '.') isCount = true;
 	}
+	return (counter);
+}
+unsigned int ScalarConverter::countDots(const std::string &literal) {
+	int	counter = 0;
+	for (unsigned int i = 0; i < literal.size(); i++)
+		if (literal[i] == '.') counter++;
 	return (counter);
 }
 
@@ -373,4 +358,24 @@ bool ScalarConverter::isInfFloat(const std::string &literal) {
 	for (unsigned int j=0;j<3;j++)
 		tolower(strInf[j]);
 	return (strInf == "inf" && isSuffixFloat(literal, sizeLiteral-1) && sizeLiteral - i > 3);
+}
+bool ScalarConverter::isInteger(const std::string &literal) {
+	unsigned int i = 0;
+	if (literal[i] == '+' || literal[i] == '-') i++;
+	while (i < literal.size()) {
+		if (!isdigit(literal[i]))
+			return (false);
+		i++;
+	}
+	return (true);
+}
+bool ScalarConverter::isFloatingPoint(const std::string &literal, unsigned int end) {
+	unsigned int i = 0;
+	if (literal[i] == '+' || literal[i] == '-') i++;
+	while (i < end) {
+		if (!isdigit(literal[i]) && literal[i] != '.')
+			return (false);
+		i++;
+	}
+	return (true);
 }
