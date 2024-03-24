@@ -177,7 +177,7 @@ void ScalarConverter::convertFromFloat(const std::string &literal) {
 	try {
 		float literalFloat = std::stof(literal);
 		//std::cout << "ftIsInff: " << ftIsInff(literalFloat) << " /ftIsNanf: " << ftIsNanf(literalFloat) << std::endl;
-		unsigned int precision = numDecimals(literal);
+		unsigned int precision = countDecimals(literal);
 		convertFromFloatToChar(literalFloat);
 		convertFromFloatToInt(literalFloat);
 		std::cout << "float: ";
@@ -251,7 +251,7 @@ void ScalarConverter::convertFromDouble(const std::string &literal) {
 	try {
 		double literalDouble = std::stod(literal);
 		//std::cout << "ftIsInf: " << ftIsInf(literalDouble) << " /ftIsNan: " << ftIsNan(literalDouble) << std::endl;
-		unsigned int precision = numDecimals(literal);
+		unsigned int precision = countDecimals(literal);
 		convertFromDoubleToChar(literalDouble);
 		convertFromDoubleToInt(literalDouble);
 		convertFromDoubleToFloat(literalDouble, precision);
@@ -333,7 +333,7 @@ void ScalarConverter::fixedToPrecision(const double &literalDouble, unsigned int
 	std::string str = ss.str();
 	std::cout << str << std::endl;
 }
-unsigned int ScalarConverter::numDecimals(const std::string &literal) {
+unsigned int ScalarConverter::countDecimals(const std::string &literal) {
 	int	counter = 0;
 	bool isCount = false;
 	for (size_t i = 0; i < literal.size(); i++) {

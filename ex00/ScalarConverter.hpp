@@ -50,7 +50,7 @@ private:
 	//helper
 	static void fixedToPrecision(const float &literalFloat, unsigned int n);
 	static void fixedToPrecision(const double &literalDouble, unsigned int n);
-	static unsigned int numDecimals(const std::string &literal);
+	static unsigned int countDecimals(const std::string &literal);
 	static bool ftIsInff(const float &literalFloat);
 	static bool ftIsInf(const double &literalDouble);
 	static bool ftIsNanf(const float &literalFloat);
