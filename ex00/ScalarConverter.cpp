@@ -48,17 +48,13 @@ TypeLiteral ScalarConverter::judgeTypes(const std::string &literal)
 				return (T_DOUBLE);
 		} else if(tmpLiteralDouble < std::numeric_limits<float>::min() || tmpLiteralDouble > std::numeric_limits<float>::max()) {
 			//doubleにはおさまるがfloatの範囲に収まらない
-			//todo: 42.042とかがここでひっかかkる
 			//return (T_FLOAT);
 		}
-	} catch (const std::invalid_argument &e) {
-		return (INVALID);
-	} catch (const std::out_of_range &e) {
-		return T_DOUBLE;
+	} catch (const std::invalid_argument &e) {} catch (const std::out_of_range &e) {
+		return (T_DOUBLE);
 	}
 	//.が含まれない => int or char / 1つ含まれる => 浮動小数 /2つ以上 => invalid
 	int lenDot = countDots(literal);
-	std::cout << "lenDot: " << lenDot << std::endl;
 	if (lenDot == 0) {
 		if (isInteger(literal))
 			return (T_INT);
@@ -67,7 +63,7 @@ TypeLiteral ScalarConverter::judgeTypes(const std::string &literal)
 		else
 			return (INVALID);
 	} else if (lenDot == 1) {
-		if (isInfFloat(literal) && isFloatingPoint(literal, literal.size() - 1))
+		if (isSuffixFloat(literal, literal.size() - 1) && isFloatingPoint(literal, literal.size() - 1))
 			return (T_FLOAT);
 		else if (isFloatingPoint(literal, literal.size()))
 			return (T_DOUBLE);
@@ -113,9 +109,12 @@ void ScalarConverter::convertFromInt(const std::string &literal)
 		convertFromIntToFloat(literalInt);
 		convertFromIntToDouble(literalInt);
 	} catch (const std::invalid_argument &e) {
-		std::cerr << MSG << "int: impossible (cannot be converted)" << RESET << std::endl;
+		std::cerr << "int: " << MSG << "impossible (cannot be converted)" << RESET << std::endl;
 	} catch (const std::out_of_range &e) {
-		std::cerr << MSG << "int: impossible (out of range)" << RESET << std::endl;
+		std::cerr << "char: " << MSG << "impossible (out of range)" << RESET << std::endl;
+		std::cerr << "int: " << MSG << "impossible (out of range)" << RESET << std::endl;
+		std::cerr << "float: " << MSG << "impossible (cannot be converted)" << RESET << std::endl;
+		std::cerr << "double: " << MSG << "impossible (cannot be converted)" << RESET << std::endl;
 	}
 }
 void ScalarConverter::convertFromIntToChar(const int &literalInt) {
@@ -151,11 +150,10 @@ void ScalarConverter::convertFromIntToDouble(const int &literalInt) {
 
 //T_FLOAT
 void ScalarConverter::convertFromFloat(const std::string &literal) {
-	//doubleでnan, infになるものはdoubleで処理される。
 	//doubleでは扱えるがfloatではinfになるものはstofからout_of_rangeがthrowされる
 	try {
 		float literalFloat = std::stof(literal);
-		//std::cout << "ftIsInff: " << ftIsInff(literalFloat) << " /ftIsNanf: " << ftIsNanf(literalFloat) << std::endl;
+		std::cout << "ftIsInff: " << ftIsInff(literalFloat) << " /ftIsNanf: " << ftIsNanf(literalFloat) << std::endl;
 		unsigned int precision = countDecimals(literal);
 		convertFromFloatToChar(literalFloat);
 		convertFromFloatToInt(literalFloat);
@@ -169,13 +167,23 @@ void ScalarConverter::convertFromFloat(const std::string &literal) {
 	} catch (const std::invalid_argument &e) {
 		std::cerr << MSG << "impossible (cannot be converted)" << RESET << std::endl;
 	} catch (const std::out_of_range &e) {
-		std::cerr << MSG << "impossible (out of range)  infでは？" << RESET << std::endl;
+		std::cerr << "char: " << MSG << "impossible (out of range)" << RESET << std::endl;
+		std::cerr << "int: " << MSG << "impossible (out of range)" << RESET << std::endl;
+		if (literal[0] == '-') {
+			std::cout << "float: -inff" << std::endl;
+			std::cout << "double: -inf" << RESET << std::endl;
+		} else {
+			std::cout << "float: inff" << std::endl;
+			std::cout << "double: inf" << RESET << std::endl;
+		}
 	}
 }
 void ScalarConverter::convertFromFloatToChar(const float &literalFloat) {
-	//inf,nanfならimpossible表記
-	if (ftIsInff(literalFloat) || ftIsNanf(literalFloat)) {
-		std::cout << "char: impossible" << std::endl;
+	if (ftIsNanf(literalFloat)) {
+		std::cerr << "char: " << MSG << "impossible (cannot be converted)" << RESET << std::endl;
+		return ;
+	} else if (ftIsInff(literalFloat)) {
+		std::cerr << "char: " << MSG << "impossible (out of range)" << RESET << std::endl;
 		return ;
 	}
 	//intを経由してcharにcast（循環対策）
@@ -189,9 +197,11 @@ void ScalarConverter::convertFromFloatToChar(const float &literalFloat) {
 	}
 }
 void ScalarConverter::convertFromFloatToInt(const float &literalFloat) {
-	//inf,nanfならimpossible表記
-	if (ftIsInff(literalFloat) || ftIsNanf(literalFloat)) {
-		std::cerr << MSG << "int: impossible (cannot be converted)" << RESET << std::endl;
+	if (ftIsNanf(literalFloat)) {
+		std::cerr << "int: " << MSG << "impossible (cannot be converted)" << RESET << std::endl;
+		return ;
+	} else if (ftIsInff(literalFloat)) {
+		std::cerr << "int: " << MSG << "impossible (out of range)" << RESET << std::endl;
 		return ;
 	}
 	//overflow判定のため一旦longにキャスト
@@ -361,21 +371,30 @@ bool ScalarConverter::isInfFloat(const std::string &literal) {
 }
 bool ScalarConverter::isInteger(const std::string &literal) {
 	unsigned int i = 0;
+	unsigned int counterDigit = 0;
 	if (literal[i] == '+' || literal[i] == '-') i++;
-	while (i < literal.size()) {
-		if (!isdigit(literal[i]))
+	while (i + counterDigit < literal.size()) {
+		if (!isdigit(literal[i + counterDigit]))
 			return (false);
-		i++;
+		counterDigit++;
 	}
-	return (true);
+	if (counterDigit > 0)
+		return (true);
+	return (false);
 }
 bool ScalarConverter::isFloatingPoint(const std::string &literal, unsigned int end) {
 	unsigned int i = 0;
+	unsigned int counterDigit = 0;
 	if (literal[i] == '+' || literal[i] == '-') i++;
-	while (i < end) {
-		if (!isdigit(literal[i]) && literal[i] != '.')
+	while (i + counterDigit < end) {
+		if (!isdigit(literal[i + counterDigit]) && literal[i + counterDigit] != '.')
 			return (false);
-		i++;
+		if (literal[i + counterDigit] == '.')
+			i++;
+		else
+			counterDigit++;
 	}
-	return (true);
+	if (counterDigit > 0)
+		return (true);
+	return (false);
 }
